@@ -1,12 +1,11 @@
-export default class Board {
-    STATE_MISS = 0;
-    STATE_HIT = 1;
-    STATE_END = 2;
+import Game from "@/components/Game";
 
-    SIZE = 10
-    EMPTY = 1
-    SHIP = 2
-    DEAD_SHIP = 4
+export default class Board {
+    static SIZE = 10
+
+    static EMPTY = 1
+    static SHIP = 2
+    static DEAD_SHIP = 4
 
     states = []
     ships = []
@@ -27,9 +26,10 @@ export default class Board {
         if (this.isMine) {
             return false;
         }
+        // console.log(row, col, Board.SHIP, Board.DEAD_SHIP);
 
-        let isHit = this.positions[row][col] === this.SHIP;
-        this.states[row][col] = isHit ? this.SHIP : this.EMPTY;
+        let isHit = this.positions[row][col] === Board.SHIP;
+        this.states[row][col] = isHit ? Board.SHIP : Board.EMPTY;
 
         if (isHit) {
             let ship = this.findShipByCoords(row, col);
@@ -37,21 +37,21 @@ export default class Board {
             if (isKilled) {
                 this.markAsDead(ship);
                 if (this.allShipsAreDead()) {
-                    return this.STATE_END;
+                    return Game.END;
                 }
             }
         }
-        return isHit ? this.STATE_HIT : this.STATE_MISS;
+        return isHit ? Game.HIT : Game.MISS;
     }
 
     isMyShip(row, col) {
-        return this.isMine && this.positions[row][col] === this.SHIP;
+        return this.isMine && this.positions[row][col] === Board.SHIP;
     }
 
     getHitsCount(coords) {
         let count = 0;
         for (let [x, y] of coords) {
-            if (this.states[x][y] === this.SHIP) {
+            if (this.states[x][y] === Board.SHIP) {
                 count++;
             }
         }
@@ -71,7 +71,7 @@ export default class Board {
     markAsDead(ship) {
         ship.isDead = true;
         for (let [x, y] of ship.coords) {
-            this.states[x][y] = this.DEAD_SHIP;
+            this.states[x][y] = Board.DEAD_SHIP;
         }
     }
 
@@ -86,9 +86,9 @@ export default class Board {
 
     getEmptyMatrix(matrix) {
         matrix = [];
-        for (let row = 0; row < this.SIZE; row++) {
+        for (let row = 0; row < Board.SIZE; row++) {
             let cols = [];
-            for (let col = 0; col < this.SIZE; col++) {
+            for (let col = 0; col < Board.SIZE; col++) {
                 cols.push(0);
             }
             matrix.push(cols);
@@ -146,7 +146,7 @@ export default class Board {
         for (let r = -1; r <= 1; r++) {
             for (let c = -1; c <= 1; c++) {
                 try {
-                    if (this.positions[row + r][col + c] === this.SHIP) {
+                    if (this.positions[row + r][col + c] === Board.SHIP) {
                         return false;
                     }
                     // eslint-disable-next-line no-empty
@@ -159,9 +159,19 @@ export default class Board {
 
     add(ship) {
         for (let [row, col] of ship.coords) {
-            this.positions[row][col] = this.SHIP;
+            this.positions[row][col] = Board.SHIP;
         }
         // console.log('Ship added', ship.info());
+    }
+
+    isMissed(state) {
+        return state === Board.EMPTY;
+    }
+    isFire(state) {
+        return state === Board.SHIP;
+    }
+    isDead(state) {
+        return state === Board.DEAD_SHIP;
     }
 }
 

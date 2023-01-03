@@ -1,13 +1,14 @@
 <template>
-  <SeaBoard :board="myBoard"/>
+  <SeaBoard :board="myBoard" :game="game" />
   <div class="vertical-space"></div>
-  <SeaBoard :board="enemyBoard"/>
+  <SeaBoard :board="enemyBoard" :game="game" />
 </template>
 
 <script>
 
 import SeaBoard from './components/SeaBoard.vue'
 import Board from "@/components/Board.js";
+import Game from "@/components/Game";
 
 
 export default {
@@ -16,6 +17,7 @@ export default {
     return {
       myBoard: new Board(true),
       enemyBoard: new Board(),
+      game: new Game(),
     }
   },
   components: {

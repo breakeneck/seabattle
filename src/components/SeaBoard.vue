@@ -1,10 +1,10 @@
 <template>
-  <table class="board" :class="{'mine': this.board.isMine}">
+  <table class="board" :class="{'disabled': ! this.game.isCurrentBoardTurn(this.board.isMine)}">
     <tr v-for="(rowData, row) in this.board.states" :key="row">
-      <td v-for="(state, col) in rowData" :key="col" @click="this.board.shot(row, col)">
-        <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="state == this.board.EMPTY" class="color-gray" />
-        <font-awesome-icon icon="fa-solid fa-fire" v-if="state == this.board.SHIP"  class="color-red" />
-        <font-awesome-icon icon="fa-solid fa-skull" v-if="state == this.board.DEAD_SHIP"/>
+      <td v-for="(state, col) in rowData" :key="col" @click="this.game.shot(this.board, row, col)">
+        <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="this.board.isMissed(state)" class="color-gray" />
+        <font-awesome-icon icon="fa-solid fa-fire" v-if="this.board.isFire(state)"  class="color-red" />
+        <font-awesome-icon icon="fa-solid fa-skull" v-if="this.board.isDead(state)"/>
         <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyShip(row, col)"/>
       </td>
     </tr>
@@ -16,12 +16,15 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faFire, faSkull, faShip } from '@fortawesome/free-solid-svg-icons'
 import { faDotCircle } from '@fortawesome/free-regular-svg-icons'
+import Board from "@/components/Board";
+import Game from "@/components/Game";
 library.add(faFire, faDotCircle, faSkull, faShip);
 
 export default {
   name: 'SeaBoard',
   props: {
-    board: Object,
+    board: Board,
+    game: Game
   },
   components: {
     FontAwesomeIcon
@@ -64,6 +67,9 @@ table.board td {
 }
 .color-red {
   color: #ff0000;
+}
+table.board.disabled {
+
 }
 
 </style>
