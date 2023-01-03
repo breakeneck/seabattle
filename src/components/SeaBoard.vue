@@ -3,9 +3,9 @@
     <tr v-for="(rowData, row) in this.board.states" :key="row">
       <td v-for="(state, col) in rowData" :key="col" @click="this.game.shot(this.board, row, col)">
         <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="this.board.isMissed(state)" class="color-gray" />
-        <font-awesome-icon icon="fa-solid fa-fire" v-if="this.board.isFire(state)"  class="color-red" />
+        <font-awesome-icon icon="fa-solid fa-fire" v-if="this.board.isFire(state)" class="color-red" />
         <font-awesome-icon icon="fa-solid fa-skull" v-if="this.board.isDead(state)"/>
-        <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyShip(row, col)"/>
+        <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyShip(row, col)" class="color-blue"/>
       </td>
     </tr>
   </table>
@@ -67,6 +67,9 @@ table.board td {
 }
 .color-red {
   color: #ff0000;
+}
+.color-blue {
+  color: #00729d;
 }
 table.board.disabled {
 

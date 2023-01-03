@@ -23,10 +23,10 @@ export default class Board {
     }
 
     shot(row, col) {
-        if (this.isMine) {
+        if (this.isMine || this.states[row][col]) {
             return false;
         }
-        // console.log(row, col, Board.SHIP, Board.DEAD_SHIP);
+        console.log(row, col, Board.SHIP, Board.DEAD_SHIP);
 
         let isHit = this.positions[row][col] === Board.SHIP;
         this.states[row][col] = isHit ? Board.SHIP : Board.EMPTY;
