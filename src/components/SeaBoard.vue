@@ -1,5 +1,5 @@
 <template>
-  <table class="board" :class="{'mine': this,board.isMine}">
+  <table class="board" :class="{'mine': this.board.isMine}">
     <tr v-for="(rowData, row) in this.board.states" :key="row">
       <td v-for="(state, col) in rowData" :key="col" @click="this.board.shot(row, col)">
         <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="state == this.board.EMPTY" class="color-gray" />
@@ -14,9 +14,9 @@
 <script>
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faFire, faSkull } from '@fortawesome/free-solid-svg-icons'
+import { faFire, faSkull, faShip } from '@fortawesome/free-solid-svg-icons'
 import { faDotCircle } from '@fortawesome/free-regular-svg-icons'
-library.add(faFire, faDotCircle, faSkull);
+library.add(faFire, faDotCircle, faSkull, faShip);
 
 export default {
   name: 'SeaBoard',
@@ -39,6 +39,7 @@ table.board {
   /*background: #dbdbdb;*/
   /*border-spacing: 1px;*/
   margin: 0 auto;
+  display: inline-block;
 }
 
 table.board td {

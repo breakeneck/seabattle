@@ -1,8 +1,11 @@
 export default class Board {
+    STATE_MISS = 0;
+    STATE_HIT = 1;
+    STATE_END = 2;
+
     SIZE = 10
     EMPTY = 1
     SHIP = 2
-    MY_SHIP = 3
     DEAD_SHIP = 4
 
     states = []
@@ -24,13 +27,61 @@ export default class Board {
         if (this.isMine) {
             return false;
         }
-        this.states[row][col] = this.positions[row][col] === this.SHIP ? this.SHIP : this.EMPTY;
+
+        let isHit = this.positions[row][col] === this.SHIP;
+        this.states[row][col] = isHit ? this.SHIP : this.EMPTY;
+
+        if (isHit) {
+            let ship = this.findShipByCoords(row, col);
+            let isKilled = this.getHitsCount(ship.coords) === ship.length;
+            if (isKilled) {
+                this.markAsDead(ship);
+                if (this.allShipsAreDead()) {
+                    return this.STATE_END;
+                }
+            }
+        }
+        return isHit ? this.STATE_HIT : this.STATE_MISS;
     }
 
     isMyShip(row, col) {
-        if (this.isMine && this.positions[row][col] === this.SHIP) {
-            return true;
+        return this.isMine && this.positions[row][col] === this.SHIP;
+    }
+
+    getHitsCount(coords) {
+        let count = 0;
+        for (let [x, y] of coords) {
+            if (this.states[x][y] === this.SHIP) {
+                count++;
+            }
         }
+        return count;
+    }
+
+    findShipByCoords(row, col) {
+        for (let ship of this.ships) {
+            for (let [x, y] of ship.coords) {
+                if (x === row && y === col) {
+                    return ship;
+                }
+            }
+        }
+    }
+
+    markAsDead(ship) {
+        ship.isDead = true;
+        for (let [x, y] of ship.coords) {
+            this.states[x][y] = this.DEAD_SHIP;
+        }
+    }
+
+    allShipsAreDead() {
+        for (let ship of this.ships) {
+            if (! ship.isDead) {
+                return false;
+            }
+        }
+        return true;
     }
 
     getEmptyMatrix(matrix) {
@@ -118,6 +169,7 @@ class Ship {
     HORIZONTAL = 0
     VERTICAL = 1
 
+    isDead = false;
     length = 0
     direction = 0
     coords = []
