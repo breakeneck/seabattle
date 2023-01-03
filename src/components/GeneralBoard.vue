@@ -1,14 +1,18 @@
 <template>
-  <table class="board" :class="{'disabled': ! this.game.isCurrentBoardTurn(this.board.isMine)}">
-    <tr v-for="(rowData, row) in this.board.states" :key="row">
-      <td v-for="(state, col) in rowData" :key="col" @click="this.game.shot(this.board, row, col)">
-        <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="this.board.isMissed(state)" class="color-gray" />
-        <font-awesome-icon icon="fa-solid fa-fire" v-if="this.board.isFire(state)" class="color-red" />
-        <font-awesome-icon icon="fa-solid fa-skull" v-if="this.board.isDead(state)"/>
-        <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyShip(row, col)" class="color-blue"/>
-      </td>
-    </tr>
-  </table>
+  <div class="container">
+    <div class="overflow" v-if="this.game.isCurrentBoardTurn(this.board.isMine)"></div>
+    <table class="board">
+      <tr v-for="(rowData, row) in this.board.states" :key="row">
+        <td v-for="(state, col) in rowData" :key="col" @click="this.game.shot(this.board, row, col)">
+          <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="this.board.isMissed(state)" class="color-gray" />
+          <font-awesome-icon icon="fa-solid fa-fire" v-if="this.board.isFire(state)" class="color-red" />
+          <font-awesome-icon icon="fa-solid fa-skull" v-if="this.board.isDead(state)"/>
+          <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyNewShip(row, col)" class="color-blue"/>
+          <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyBurningShip(row, col)" class="color-blue"/>
+        </td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -21,7 +25,7 @@ import Game from "@/components/Game";
 library.add(faFire, faDotCircle, faSkull, faShip);
 
 export default {
-  name: 'SeaBoard',
+  name: 'GeneralBoard',
   props: {
     board: Board,
     game: Game
@@ -42,7 +46,6 @@ table.board {
   /*background: #dbdbdb;*/
   /*border-spacing: 1px;*/
   margin: 0 auto;
-  display: inline-block;
 }
 
 table.board td {
@@ -71,8 +74,16 @@ table.board td {
 .color-blue {
   color: #00729d;
 }
-table.board.disabled {
-
+.container {
+  position: relative;
+  display: inline-block;
+}
+.overflow {
+  background: #000000;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 50%;
 }
 
 </style>

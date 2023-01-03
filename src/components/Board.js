@@ -1,12 +1,13 @@
-import Game from "@/components/Game";
+import Ship from "@/components/Ship";
+import Matrix from "@/components/Matrix";
 
 export default class Board {
-    static SIZE = 10
-
     static EMPTY = 1
     static SHIP = 2
-    static DEAD_SHIP = 4
+    static DEAD_SHIP = 3
+    static ALL_SHIPS_DEAD = 4
 
+    positions = []
     states = []
     ships = []
 
@@ -15,18 +16,15 @@ export default class Board {
     constructor(isMine) {
         this.isMine = isMine || false;
 
-        this.states = this.getEmptyMatrix();
+        this.states = Matrix.reset();
         this.createShips();
         this.locateShips();
-
-        console.log(this);
     }
 
     shot(row, col) {
         if (this.isMine || this.states[row][col]) {
             return false;
         }
-        console.log(row, col, Board.SHIP, Board.DEAD_SHIP);
 
         let isHit = this.positions[row][col] === Board.SHIP;
         this.states[row][col] = isHit ? Board.SHIP : Board.EMPTY;
@@ -37,15 +35,26 @@ export default class Board {
             if (isKilled) {
                 this.markAsDead(ship);
                 if (this.allShipsAreDead()) {
-                    return Game.END;
+                    return Board.ALL_SHIPS_DEAD;
+                }
+                else {
+                    return Board.DEAD_SHIP;
                 }
             }
         }
-        return isHit ? Game.HIT : Game.MISS;
+        return isHit ? Board.SHIP : Board.EMPTY;
     }
 
     isMyShip(row, col) {
         return this.isMine && this.positions[row][col] === Board.SHIP;
+    }
+
+    isMyNewShip(row, col) {
+        return this.isMyShip(row, col) && ! this.states[row][col];
+    }
+
+    isMyBurningShip(row, col) {
+        return this.isMyShip(row, col) && this.states[row][col];
     }
 
     getHitsCount(coords) {
@@ -84,18 +93,6 @@ export default class Board {
         return true;
     }
 
-    getEmptyMatrix(matrix) {
-        matrix = [];
-        for (let row = 0; row < Board.SIZE; row++) {
-            let cols = [];
-            for (let col = 0; col < Board.SIZE; col++) {
-                cols.push(0);
-            }
-            matrix.push(cols);
-        }
-        return matrix;
-    }
-
     createShips() {
         this.ships = [];
         this.ships.push(new Ship(4));
@@ -114,7 +111,7 @@ export default class Board {
     }
 
     locateShips() {
-        this.positions = this.getEmptyMatrix();
+        this.positions = Matrix.reset();
 
         for (let ship of this.ships) {
             let attempts = 0;
@@ -172,52 +169,5 @@ export default class Board {
     }
     isDead(state) {
         return state === Board.DEAD_SHIP;
-    }
-}
-
-class Ship {
-    HORIZONTAL = 0
-    VERTICAL = 1
-
-    isDead = false;
-    length = 0
-    direction = 0
-    coords = []
-
-    constructor(length) {
-        this.length = length;
-        this.generatePosition();
-    }
-
-    generatePosition() {
-        this.direction = this.random(1);
-        let maxWidth = this.direction === this.HORIZONTAL ? (10 - this.length - 1) : 10 - 1;
-        let maxHeight = this.direction === this.VERTICAL ? (10 - this.length - 1) : 10 - 1;
-
-        let [top, left] = [this.random(maxWidth), this.random(maxHeight)];
-        this.writeCoords(top, left);
-
-        // console.log(this.length, this.direction ? 'vertical' : 'horizontal', maxWidth, maxWidth, ' | ', top, left);
-
-        return true;
-    }
-
-    writeCoords(row, col) {
-        this.coords = [];
-        this.coords.push([row, col]);
-        for (let i = 0; i < this.length - 1; i++) {
-            row = this.direction === this.HORIZONTAL ? row + 1 : row;
-            col = this.direction === this.VERTICAL ? col + 1 : col;
-            this.coords.push([row, col]);
-        }
-    }
-
-    random(max) {
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max + 1));
-    }
-
-    info() {
-        return this.length + (this.direction ? ' vertical ' : ' horizontal ') + JSON.stringify(this.coords);
     }
 }

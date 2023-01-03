@@ -1,12 +1,13 @@
 <template>
-  <SeaBoard :board="myBoard" :game="game" />
+  <div style="text-align: center">Turn: {{this.game.isMyTurn() ? 'Mine' : 'Enemy'}}</div>
+  <GeneralBoard :board="myBoard" :game="game" />
   <div class="vertical-space"></div>
-  <SeaBoard :board="enemyBoard" :game="game" />
+  <GeneralBoard :board="enemyBoard" :game="game" />
 </template>
 
 <script>
 
-import SeaBoard from './components/SeaBoard.vue'
+import GeneralBoard from './components/GeneralBoard'
 import Board from "@/components/Board.js";
 import Game from "@/components/Game";
 
@@ -14,14 +15,16 @@ import Game from "@/components/Game";
 export default {
   name: 'App',
   data: function () {
+    let myBoard = new Board(true);
+    let botBoard = new Board();
     return {
-      myBoard: new Board(true),
-      enemyBoard: new Board(),
-      game: new Game(),
+      myBoard: myBoard,
+      enemyBoard: botBoard,
+      game: new Game(myBoard, botBoard),
     }
   },
   components: {
-    SeaBoard
+    GeneralBoard
   }
 }
 </script>
