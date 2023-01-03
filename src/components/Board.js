@@ -8,7 +8,11 @@ export default class Board {
     states = []
     ships = []
 
-    constructor() {
+    isMine = false
+
+    constructor(isMine) {
+        this.isMine = isMine || false;
+
         this.states = this.getEmptyMatrix();
         this.createShips();
         this.locateShips();
@@ -17,7 +21,16 @@ export default class Board {
     }
 
     shot(row, col) {
+        if (this.isMine) {
+            return false;
+        }
         this.states[row][col] = this.positions[row][col] === this.SHIP ? this.SHIP : this.EMPTY;
+    }
+
+    isMyShip(row, col) {
+        if (this.isMine && this.positions[row][col] === this.SHIP) {
+            return true;
+        }
     }
 
     getEmptyMatrix(matrix) {

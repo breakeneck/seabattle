@@ -1,10 +1,11 @@
 <template>
-  <table class="board">
+  <table class="board" :class="{'mine': this,board.isMine}">
     <tr v-for="(rowData, row) in this.board.states" :key="row">
       <td v-for="(state, col) in rowData" :key="col" @click="this.board.shot(row, col)">
         <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="state == this.board.EMPTY" class="color-gray" />
         <font-awesome-icon icon="fa-solid fa-fire" v-if="state == this.board.SHIP"  class="color-red" />
         <font-awesome-icon icon="fa-solid fa-skull" v-if="state == this.board.DEAD_SHIP"/>
+        <font-awesome-icon icon="fa-solid fa-ship" v-if="this.board.isMyShip(row, col)"/>
       </td>
     </tr>
   </table>

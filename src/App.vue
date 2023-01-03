@@ -1,5 +1,7 @@
 <template>
-  <SeaBoard :board="board"/>
+  <SeaBoard :board="myBoard"/>
+  <div class="vertical-space"></div>
+  <SeaBoard :board="enemyBoard"/>
 </template>
 
 <script>
@@ -12,7 +14,8 @@ export default {
   name: 'App',
   data: function () {
     return {
-      board: new Board()
+      myBoard: new Board(true),
+      enemyBoard: new Board(),
     }
   },
   components: {
@@ -29,5 +32,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin: 20px auto ;
+}
+.vertical-space {
+  display: inline-block;
+  width: 50px;
 }
 </style>
