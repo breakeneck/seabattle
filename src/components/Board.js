@@ -65,24 +65,25 @@ export default class Board {
             this.cells[x][y].update(Cell.DEAD_SHIP);
         }
 
-        // let [top, left, bottom, right] = ship.getOuterCoords();
+        let [top, left, bottom, right] = ship.getOuterCoords();
         // console.log(top, left, bottom, right);
-        //
-        // for (let x = top; x <= bottom; x++) {
-        //     for (let y = left; x <= right; y++) {
-        //         try {
-        //             let cell = this.cells[x][y];
-        //             if (cell.isFire()) {
-        //                 cell.update(Cell.DEAD_SHIP)
-        //             }
-        //             else {
-        //                 cell.update(Cell.MISS);
-        //             }
-        //             // eslint-disable-next-line no-empty
-        //         } catch (e) {
-        //         }
-        //     }
-        // }
+
+        for (let x = top; x <= bottom; x++) {
+            for (let y = left; y <= right; y++) {
+                // console.log(x, y, this.cells[x][y].state);
+                try {
+                    let cell = this.cells[x][y];
+                    if (cell.isDead()) {
+                        cell.update(Cell.DEAD_SHIP)
+                    }
+                    else {
+                        cell.update(Cell.MISS);
+                    }
+                    // eslint-disable-next-line no-empty
+                } catch (e) {
+                }
+            }
+        }
     }
 
     allShipsAreDead() {
