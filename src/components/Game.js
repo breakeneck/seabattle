@@ -2,11 +2,6 @@ import Board from "@/components/Board";
 import Bot from "@/components/Bot";
 
 export default class Game {
-    static MISS = 0;
-    static HIT = 1;
-    static KILL = 2;
-    static END = 3;
-
     static MY_TURN = 0;
     static ENEMY_TURN = 1;
 
@@ -30,7 +25,7 @@ export default class Game {
 
     checkResult(shotResult) {
         switch (shotResult) {
-            case Board.EMPTY:
+            case Board.MISS:
                 return this.changeTurn();
             case Board.ALL_SHIPS_DEAD:
                 return alert('ENd of the Game');

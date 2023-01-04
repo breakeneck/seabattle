@@ -4,6 +4,7 @@ export default class Ship {
 
     isDead = false;
     length = 0
+    health = 0
     direction = 0
     coords = []
 
@@ -13,7 +14,9 @@ export default class Ship {
     }
 
     generatePosition() {
+        this.health = this.length;
         this.direction = this.random(1);
+
         let maxWidth = this.direction === this.HORIZONTAL ? (10 - this.length - 1) : 10 - 1;
         let maxHeight = this.direction === this.VERTICAL ? (10 - this.length - 1) : 10 - 1;
 
@@ -40,7 +43,22 @@ export default class Ship {
         return Math.floor(Math.random() * (max + 1));
     }
 
+    addDamage() {
+        this.health--;
+        return this;
+    }
+
+    isKilled() {
+        return this.health === 0;
+    }
+
     info() {
         return this.length + (this.direction ? ' vertical ' : ' horizontal ') + JSON.stringify(this.coords);
+    }
+
+    getOuterCoords() {
+        let [top, left] = this.coords[0];
+        let [bottom, right] = this.coords[this.coords.length - 1];
+        return [top - 1, left - 1, bottom + 1, right + 1];
     }
 }

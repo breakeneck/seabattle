@@ -1,14 +1,10 @@
 import Ship from "@/components/Ship";
-import Matrix from "@/components/Matrix";
+import Cell from "@/components/Cell";
 
 export default class Board {
-    static EMPTY = 1
-    static SHIP = 2
-    static DEAD_SHIP = 3
-    static ALL_SHIPS_DEAD = 4
+    static SIZE = 10;
 
-    positions = []
-    states = []
+    cells = []
     ships = []
 
     isMine = false
@@ -16,55 +12,42 @@ export default class Board {
     constructor(isMine) {
         this.isMine = isMine || false;
 
-        this.states = Matrix.reset();
+        this.reset();
+    }
+
+    reset() {
+        this.cells = Array.from({length: Board.SIZE},() => (
+            Array.from({length: Board.SIZE},() => (
+                new Cell()
+            ))
+        ))
+
         this.createShips();
         this.locateShips();
     }
 
-    shot(row, col) {
-        if (this.isMine || this.states[row][col]) {
+    shot(x, y) {
+        let cell = this.cells[x][y];
+        if (! cell.isUntouched()) {
             return false;
         }
 
-        let isHit = this.positions[row][col] === Board.SHIP;
-        this.states[row][col] = isHit ? Board.SHIP : Board.EMPTY;
+        if (cell.isShip()) {
+            cell.update(Cell.FIRED_SHIP);
 
-        if (isHit) {
-            let ship = this.findShipByCoords(row, col);
-            let isKilled = this.getHitsCount(ship.coords) === ship.length;
-            if (isKilled) {
-                this.markAsDead(ship);
+            let ship = this.findShipByCoords(x, y);
+            ship.addDamage();
+            if (ship.isKilled()) {
+                this.markDeadShipArea(ship);
                 if (this.allShipsAreDead()) {
-                    return Board.ALL_SHIPS_DEAD;
-                }
-                else {
-                    return Board.DEAD_SHIP;
+                    cell.update(Cell.ALL_SHIPS_DEAD);
                 }
             }
         }
-        return isHit ? Board.SHIP : Board.EMPTY;
-    }
-
-    isMyShip(row, col) {
-        return this.isMine && this.positions[row][col] === Board.SHIP;
-    }
-
-    isMyNewShip(row, col) {
-        return this.isMyShip(row, col) && ! this.states[row][col];
-    }
-
-    isMyBurningShip(row, col) {
-        return this.isMyShip(row, col) && this.states[row][col];
-    }
-
-    getHitsCount(coords) {
-        let count = 0;
-        for (let [x, y] of coords) {
-            if (this.states[x][y] === Board.SHIP) {
-                count++;
-            }
+        else {
+            cell.update(Cell.MISS);
         }
-        return count;
+        return cell;
     }
 
     findShipByCoords(row, col) {
@@ -77,16 +60,34 @@ export default class Board {
         }
     }
 
-    markAsDead(ship) {
-        ship.isDead = true;
+    markDeadShipArea(ship) {
         for (let [x, y] of ship.coords) {
-            this.states[x][y] = Board.DEAD_SHIP;
+            this.cells[x][y].update(Cell.DEAD_SHIP);
         }
+
+        // let [top, left, bottom, right] = ship.getOuterCoords();
+        // console.log(top, left, bottom, right);
+        //
+        // for (let x = top; x <= bottom; x++) {
+        //     for (let y = left; x <= right; y++) {
+        //         try {
+        //             let cell = this.cells[x][y];
+        //             if (cell.isFire()) {
+        //                 cell.update(Cell.DEAD_SHIP)
+        //             }
+        //             else {
+        //                 cell.update(Cell.MISS);
+        //             }
+        //             // eslint-disable-next-line no-empty
+        //         } catch (e) {
+        //         }
+        //     }
+        // }
     }
 
     allShipsAreDead() {
         for (let ship of this.ships) {
-            if (! ship.isDead) {
+            if (! ship.isKilled()) {
                 return false;
             }
         }
@@ -95,6 +96,7 @@ export default class Board {
 
     createShips() {
         this.ships = [];
+
         this.ships.push(new Ship(4));
 
         this.ships.push(new Ship(3));
@@ -111,8 +113,6 @@ export default class Board {
     }
 
     locateShips() {
-        this.positions = Matrix.reset();
-
         for (let ship of this.ships) {
             let attempts = 0;
             while (! this.isFits(ship)) {
@@ -125,12 +125,11 @@ export default class Board {
             }
             this.add(ship);
         }
-        // console.log(this.positions);
     }
 
     isFits(ship) {
-        for (let [row, col] of ship.coords) {
-            if (! this.isCoordFits(row, col)) {
+        for (let [x, y] of ship.coords) {
+            if (! this.isCoordFits(x, y)) {
                 // console.log(row, col, 'ship not fits', ship.info());
                 return false;
             }
@@ -139,11 +138,11 @@ export default class Board {
         return true;
     }
 
-    isCoordFits(row, col) {
-        for (let r = -1; r <= 1; r++) {
-            for (let c = -1; c <= 1; c++) {
+    isCoordFits(x, y) {
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
                 try {
-                    if (this.positions[row + r][col + c] === Board.SHIP) {
+                    if (this.cells[x + dx][y + dy].isShip()) {
                         return false;
                     }
                     // eslint-disable-next-line no-empty
@@ -155,19 +154,10 @@ export default class Board {
     }
 
     add(ship) {
-        for (let [row, col] of ship.coords) {
-            this.positions[row][col] = Board.SHIP;
+        for (let [x, y] of ship.coords) {
+            // console.log(x, y);
+            this.cells[x][y].update(Cell.UNTOUCHED_SHIP);
         }
         // console.log('Ship added', ship.info());
-    }
-
-    isMissed(state) {
-        return state === Board.EMPTY;
-    }
-    isFire(state) {
-        return state === Board.SHIP;
-    }
-    isDead(state) {
-        return state === Board.DEAD_SHIP;
     }
 }
