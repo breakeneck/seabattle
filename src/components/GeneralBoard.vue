@@ -3,7 +3,7 @@
     <div class="overflow" v-if="this.game.isCurrentBoardTurn(this.board.isMine)"></div>
     <table class="board">
       <tr v-for="(rowData, row) in this.board.cells" :key="row">
-        <td v-for="(cell, col) in rowData" :key="col" @click="this.game.shot(this.board, row, col)">
+        <td v-for="(cell, col) in rowData" :key="col" @click="cell.isUntouched() && ! this.board.isMine && this.game.isStarted() ? this.game.shot(row, col) : ''">
 
           <font-awesome-icon icon="fa-regular fa-dot-circle" v-if="cell.isMissed()" class="color-gray"/>
           <font-awesome-icon icon="fa-solid fa-fire" v-else-if="cell.isFire()" beat class="color-red"/>

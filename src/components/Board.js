@@ -11,8 +11,6 @@ export default class Board {
 
     constructor(isMine) {
         this.isMine = isMine || false;
-
-        this.reset();
     }
 
     reset() {
@@ -47,6 +45,7 @@ export default class Board {
         else {
             cell.update(Cell.MISS);
         }
+
         return cell;
     }
 

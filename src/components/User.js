@@ -1,7 +1,13 @@
-export default class User {
-    states = []
+import Board from "@/components/Board";
 
-    constructor() {
-        this.states = [];
+export default class User {
+    board = Board
+
+    constructor(board) {
+        this.board = board;
+    }
+
+    getShotCoords() {
+        console.log('User is not a bot');
     }
 }

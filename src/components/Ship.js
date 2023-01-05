@@ -1,3 +1,5 @@
+import Utils from "@/components/Utils";
+
 export default class Ship {
     HORIZONTAL = 0
     VERTICAL = 1
@@ -15,12 +17,12 @@ export default class Ship {
 
     generatePosition() {
         this.health = this.length;
-        this.direction = this.random(1);
+        this.direction = Utils.random(1);
 
         let maxWidth = this.direction === this.HORIZONTAL ? (10 - this.length - 1) : 10 - 1;
         let maxHeight = this.direction === this.VERTICAL ? (10 - this.length - 1) : 10 - 1;
 
-        let [top, left] = [this.random(maxWidth), this.random(maxHeight)];
+        let [top, left] = [Utils.random(maxWidth), Utils.random(maxHeight)];
         this.writeCoords(top, left);
 
         // console.log(this.length, this.direction ? 'vertical' : 'horizontal', maxWidth, maxWidth, ' | ', top, left);
@@ -36,11 +38,6 @@ export default class Ship {
             col = this.direction === this.VERTICAL ? col + 1 : col;
             this.coords.push([row, col]);
         }
-    }
-
-    random(max) {
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max + 1));
     }
 
     addDamage() {
