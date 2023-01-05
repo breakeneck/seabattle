@@ -3,6 +3,7 @@ import Cell from "@/components/Cell";
 
 export default class Board {
     static SIZE = 10;
+    static MAX_VAL = Board.SIZE - 1;
 
     cells = []
     ships = []
@@ -141,12 +142,10 @@ export default class Board {
     isCoordFits(x, y) {
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
-                try {
+                if (Board.validateCoords(x + dx, y + dy)) {
                     if (this.cells[x + dx][y + dy].isShip()) {
                         return false;
                     }
-                    // eslint-disable-next-line no-empty
-                } catch (e) {
                 }
             }
         }
@@ -159,5 +158,10 @@ export default class Board {
             this.cells[x][y].update(Cell.UNTOUCHED_SHIP);
         }
         // console.log('Ship added', ship.info());
+    }
+
+    static validateCoords(x, y) {
+        return x >= 0 && x <= Board.MAX_VAL
+            && y >= 0 && y <= Board.MAX_VAL;
     }
 }

@@ -1,8 +1,8 @@
 import Utils from "@/components/Utils";
 
 export default class Ship {
-    HORIZONTAL = 0
-    VERTICAL = 1
+    static HORIZONTAL = 0
+    static VERTICAL = 1
 
     isDead = false;
     length = 0
@@ -19,8 +19,8 @@ export default class Ship {
         this.health = this.length;
         this.direction = Utils.random(1);
 
-        let maxWidth = this.direction === this.HORIZONTAL ? (10 - this.length - 1) : 10 - 1;
-        let maxHeight = this.direction === this.VERTICAL ? (10 - this.length - 1) : 10 - 1;
+        let maxWidth = this.direction === Ship.HORIZONTAL ? (10 - this.length - 1) : 10 - 1;
+        let maxHeight = this.direction === Ship.VERTICAL ? (10 - this.length - 1) : 10 - 1;
 
         let [top, left] = [Utils.random(maxWidth), Utils.random(maxHeight)];
         this.writeCoords(top, left);
@@ -34,8 +34,8 @@ export default class Ship {
         this.coords = [];
         this.coords.push([row, col]);
         for (let i = 0; i < this.length - 1; i++) {
-            row = this.direction === this.HORIZONTAL ? row + 1 : row;
-            col = this.direction === this.VERTICAL ? col + 1 : col;
+            row = this.direction === Ship.HORIZONTAL ? row + 1 : row;
+            col = this.direction === Ship.VERTICAL ? col + 1 : col;
             this.coords.push([row, col]);
         }
     }

@@ -3,7 +3,7 @@ import User from "@/components/User";
 import Utils from "@/components/Utils";
 
 export default class Game {
-    static BOT_THINK_INTERVAL = 200;
+    static BOT_THINK_INTERVAL = 500;
 
     static NOT_STARTED = 0
     static STATE_MY_TURN = 1;
@@ -39,6 +39,7 @@ export default class Game {
         Utils.beep();
         if (this.isBotMove()) {
             let bot = this.user();
+            // bot.findFire();
             [x, y] = bot.getShotCoords();
         }
 
