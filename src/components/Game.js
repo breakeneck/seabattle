@@ -1,6 +1,7 @@
 import Cell from "@/components/Cell";
 import User from "@/components/User";
 import Utils from "@/components/Utils";
+import Bot from "@/components/Bot";
 
 export default class Game {
     static BOT_THINK_INTERVAL = 500;
@@ -36,7 +37,6 @@ export default class Game {
     }
 
     shot(x, y) {
-        Utils.beep();
         if (this.isBotMove()) {
             let bot = this.user();
             // bot.findFire();
@@ -46,10 +46,13 @@ export default class Game {
         let cell = this.user().board.shot(x, y);
         switch (cell.state) {
             case Cell.MISS:
+                Utils.beep();
                 this.changeTurn();
                 break
             case Cell.ALL_SHIPS_DEAD:
                 return alert('End of the Game.' + (this.isMyTurn() ? 'You win!' : 'Bot wins!'));
+            default:
+                this.isMyTurn() ? Utils.boom() : Utils.boom2();
         }
 
         if (this.isBotMove()) {
@@ -70,7 +73,7 @@ export default class Game {
     }
 
     isBotMove() {
-        return this.user().constructor.name === 'Bot';
+        return this.user().constructor.name === Bot.name;
     }
 
     isStarted() {
